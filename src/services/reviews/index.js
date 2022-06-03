@@ -1,5 +1,6 @@
 import express from "express";
 import createError from "http-errors";
+import ProductModel from "../products/models.js";
 import ReviewModel from "./models.js";
 
 const reviewRouter = express.Router();
@@ -7,7 +8,12 @@ const reviewRouter = express.Router();
 reviewRouter.post("/", async (req, res, next) => {
   try {
     const review = await ReviewModel.create(req.body);
-    res.json(review);
+    const updateProduct = await ProductModel.findByIdAndUpdate(
+      req.body.productId,
+      { $push: { reviews: review._id } },
+      { new: true, runValidators: true }
+    );
+    res.send(updateProduct);
   } catch (err) {
     next(err);
   }

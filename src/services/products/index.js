@@ -54,7 +54,6 @@ productRouter.get("/:productId", async (req, res, next) => {
       path: "reviews",
       select: "comment rate",
     });
-    res.send(product);
     if (product) {
       res.send(product);
     } else {
@@ -121,8 +120,12 @@ productRouter.post(
   cloudinaryUploader,
   async (req, res, next) => {
     try {
-      console.log("FILE: ", req.file);
-      res.send();
+      const product = await ProductModel.findByIdAndUpdate(
+        req.params.productId,
+        { imageUrl: req.file.path },
+        { new: true, runValidators: true }
+      );
+      res.send(product);
     } catch (error) {
       next(error);
     }
