@@ -43,7 +43,7 @@ userRouter.put("/:userId", async (req, res, next) => {
     const { userId } = req.params;
     const user = await userModel.findByIdAndUpdate(userId, req.body, {
       new: true,
-      runValidators: true
+      runValidators: true,
     });
     if (user) {
       res.send(user);
@@ -85,23 +85,23 @@ userRouter.post("/:userId/cart", async (req, res, next) => {
 
     const isProductInCart = await cartModel.findOne({
       userId: req.params.userId,
-      "products.productId": productId
+      "products.productId": productId,
     });
     if (isProductInCart) {
       // update quantity
       const updateCart = await cartModel.findOneAndUpdate(
         {
           userId: req.params.userId,
-          "products.productId": productId
+          "products.productId": productId,
         },
         {
           $inc: {
-            "products.$.quantity": quantity
-          }
+            "products.$.quantity": quantity,
+          },
         },
         {
           new: true,
-          runValidators: true
+          runValidators: true,
         }
       );
       res.send(updateCart);
@@ -115,6 +115,7 @@ userRouter.post("/:userId/cart", async (req, res, next) => {
       res.send(modifiedCart);
     }
   } catch (err) {
+    console.log(err);
     next(err);
   }
 });
