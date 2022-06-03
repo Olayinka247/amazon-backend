@@ -3,6 +3,7 @@ import mongoose from "mongoose";
 import cors from "cors";
 import listEndpoints from "express-list-endpoints";
 import productRouter from "./services/products/index.js";
+import reviewRouter from "./services/reviews/index.js";
 import {
   badRequestHandler,
   notFoundHandler,
@@ -19,6 +20,7 @@ server.use(cors());
 
 //ROUTES
 server.use("/products", productRouter);
+server.use("/reviews", reviewRouter);
 
 //ERROR HANDLER
 server.use(badRequestHandler);

@@ -1,9 +1,29 @@
 import express from "express";
 import createError from "http-errors";
 import q2m from "query-to-mongo";
+import multer from "multer";
+import { v2 as cloudinary } from "cloudinary";
+import { CloudinaryStorage } from "multer-storage-cloudinary";
 import ProductModel from "./models.js";
 
 const productRouter = express.Router();
+
+const cloudinaryUploader = multer({
+  storage: new CloudinaryStorage({
+    cloudinary,
+    params: {
+      folder: "strive/amazon",
+    },
+  }),
+  fileFilter: (req, file, multerNext) => {
+    if (file.mimetype !== "image/jpeg") {
+      multerNext(createError(400, "Only jpeg allowed!"));
+    } else {
+      multerNext(null, true);
+    }
+  },
+  limits: { fileSize: 1 * 1024 * 1024 }, // file size
+}).single("imageUrl");
 
 //END POINT TO POST PRODUCTS
 productRouter.post("/", async (req, res, next) => {
@@ -30,7 +50,11 @@ productRouter.get("/", async (req, res, next) => {
 
 productRouter.get("/:productId", async (req, res, next) => {
   try {
-    const product = await ProductModel.findById(req.params.productId);
+    const product = await ProductModel.findById(req.params.productId).populate({
+      path: "reviews",
+      select: "comment rate",
+    });
+    res.send(product);
     if (product) {
       res.send(product);
     } else {
@@ -89,5 +113,20 @@ productRouter.delete("/:productId", async (req, res, next) => {
     next(error);
   }
 });
+
+// END POINT TO UPLOAD IMAGE TO PRODUCT
+
+productRouter.post(
+  "/:productId/imageUrl",
+  cloudinaryUploader,
+  async (req, res, next) => {
+    try {
+      console.log("FILE: ", req.file);
+      res.send();
+    } catch (error) {
+      next(error);
+    }
+  }
+);
 
 export default productRouter;
