@@ -44,4 +44,39 @@ reviewRouter.get("/:reviewId", async (req, res, next) => {
   }
 });
 
+reviewRouter.put("/:reviewId", async (req, res, next) => {
+  try {
+    const { reviewId } = req.params;
+    const review = await ReviewModel.findByIdAndUpdate(reviewId, req.body, {
+      new: true,
+      runValidators: true
+    });
+    if (review) {
+      res.send(review);
+    } else {
+      next(
+        createError(404, `Review with id ${req.params.reviewId} not found!`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
+reviewRouter.delete("/:reviewId", async (req, res, next) => {
+  try {
+    const { reviewId } = req.params;
+    const review = await ReviewModel.findByIdAndDelete(reviewId);
+    if (review) {
+      res.send({ message: "Review deleted successfully!" });
+    } else {
+      next(
+        createError(404, `Review with id ${req.params.reviewId} not found!`)
+      );
+    }
+  } catch (error) {
+    next(error);
+  }
+});
+
 export default reviewRouter;

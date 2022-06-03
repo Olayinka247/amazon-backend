@@ -4,10 +4,11 @@ import cors from "cors";
 import listEndpoints from "express-list-endpoints";
 import productRouter from "./services/products/index.js";
 import reviewRouter from "./services/reviews/index.js";
+import userRouter from "./services/users/index.js";
 import {
   badRequestHandler,
   notFoundHandler,
-  genericErrorHandler,
+  genericErrorHandler
 } from "./errorHandlers.js";
 
 const server = express();
@@ -21,6 +22,7 @@ server.use(cors());
 //ROUTES
 server.use("/products", productRouter);
 server.use("/reviews", reviewRouter);
+server.use("/users", userRouter);
 
 //ERROR HANDLER
 server.use(badRequestHandler);
